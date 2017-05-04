@@ -1,50 +1,9 @@
-let data = [
-    {
-        from: 'Stockholm',
-        to: 'New York JFK',
-        transport: {
-            type: 'Plane',
-            id: 'SK22',
-            gate: '22',
-            seat: '7B',
-            baggage_info: 'Baggage will beautomatically transferred from your last leg'
-        }
-    },
-    {
-        from: 'Barcelona',
-        to: 'Gerona Airport',
-        transport: {
-            type: 'Bus'
-        }
-    },
-    {
-        from: 'Gerona Airport',
-        to: 'Stockholm',
-        transport: {
-            type: 'Plane',
-            id: 'SK455',
-            gate: '45B',
-            seat: '3A',
-            baggage_info: 'Baggage drop at ticket counter 344'
-        }
-    },
-    {
-        from: 'Madrid',
-        to: 'Barcelona',
-        transport: {
-            type: 'Train',
-            id: '78A',
-            seat: '45B'
-        }
-    }
-];
-
 class cardsSorter {
     constructor(cards) {
         this.cards = cards;
     }
 
-    initialCardFinder(cards = this.cards) { 
+    firstCardFinder(cards = this.cards) { 
         let hash = {};
         const data = cards;
         const valuesTo = data
@@ -71,7 +30,7 @@ class cardsSorter {
     sorting() {
         let result = [];
 
-        const firstCard = this.initialCardFinder();
+        const firstCard = this.firstCardFinder();
         const lastCard = this.lastCardFinder();
         const cards = this.cards;
 
@@ -89,9 +48,57 @@ class cardsSorter {
         sorting(firstCard.to);
         return result;
     }
+
+    finderToSeat(seat) {
+        if (seat) {
+            return `Seat ${seat}.`;
+        } else {
+            return 'No seat assignment.';
+        }
+    }
+
+    airportHelper(el) {
+        if (el.transport.gate) {
+            return `Gate ${el.transport.gate}.`;
+        } else {
+            return 'Clarify information about gate in to airport.';
+        }
+    }
+
+    drawPathWay() {
+        const sortedCards = this.sorting();
+        const ul = document.createElement('ul');
+        const body = document.getElementsByTagName('body')[0];
+
+        body.appendChild(ul);
+
+        sortedCards.forEach(el => {
+            let li = document.createElement('li');
+            let card = '';
+    
+            switch (el.transport.type) {
+                case 'Train':
+                    card = `Take train ${el.transport.id} from ${el.from} to ${el.to}. ${this.finderToSeat(el.transport.seat)}`;
+                    break;
+                case 'Bus':
+                    card = `Take the bus from ${el.from} to ${el.to}. ${this.finderToSeat(el.transport.seat)}`;
+                    break;
+                case 'Plane':
+                    card = `From ${el.from} take flight ${el.transport.id} to ${el.to}.
+                    ${this.airportHelper(el)}${this.finderToSeat(el.transport.seat)}${el.transport.baggage_info}`;
+                    break;
+                default:
+                    card = `Go from ${el.from} to ${el.to}.`
+                    break;
+            };
+
+            li.innerHTML += card;
+            document.getElementsByTagName('ul')[0].appendChild(li);
+
+        });
+    };
 }
 
 const a = new cardsSorter(data);
-
-a.initialCardFinder();
-console.log(a.sorting());
+a.firstCardFinder();
+a.drawPathWay();
