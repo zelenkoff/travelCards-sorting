@@ -98,7 +98,3 @@ class cardsSorter {
         });
     };
 }
-
-const a = new cardsSorter(data);
-a.firstCardFinder();
-a.drawPathWay();
